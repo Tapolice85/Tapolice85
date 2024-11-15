@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Launcher Pro System</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            color: #d4d4d4;
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Fundo com efeito de parallax */
+        .parallax {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRAu0_9drJnO_0McCx1RGDQMPlghqZB93MxyA&usqp=CAU');
+            background-size: cover;
+            background-position: center center;
+            z-index: -1;
+            transition: background-position 0.5s ease-out;
+        }
+
+        #title {
+            font-size: 40px;
+            font-weight: bold;
+            color: #b3b3b3;
+            position: absolute;
+            top: 20%;
+            animation: fadeIn 2s ease-out, titleAnimation 4s infinite alternate;
+            z-index: 2;
+        }
+
+        @keyframes titleAnimation {
+            0% { transform: translateY(-20px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        #status {
+            font-size: 22px;
+            font-weight: bold;
+            margin: 20px;
+            color: #aaa;
+            animation: fadeIn 2s ease-out, statusAnimation 4s infinite alternate;
+            z-index: 2;
+        }
+
+        @keyframes statusAnimation {
+            0% { transform: translateY(-20px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        #progress-container {
+            width: 80%;
+            height: 30px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+            position: relative;
+            z-index: 2;
+        }
+
+        #progress-bar {
+            width: 0;
+            height: 100%;
+            background: linear-gradient(90deg, #0a0a0a, #333);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            transition: width 1s ease;
+        }
+
+        #percentage {
+            font-size: 20px;
+            position: absolute;
+            top: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            font-weight: bold;
+            z-index: 3;
+        }
+
+        #countdown {
+            font-size: 26px;
+            font-weight: bold;
+            color: #bfbfbf;
+            display: none;
+            margin-top: 10px;
+            animation: fadeIn 2s ease-out;
+            z-index: 2;
+        }
+
+        #next-button {
+            display: none;
+            padding: 12px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(90deg, #333, #0a0a0a);
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 1s ease;
+            z-index: 2;
+        }
+
+        #next-button:hover {
+            background: linear-gradient(90deg, #555, #333);
+            transform: scale(1.1);
+        }
+
+        .slow {
+            transition: width 2s ease;
+        }
+
+        .fast {
+            transition: width 0.5s ease;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="parallax"></div> <!-- Fundo parallax -->
+    <div id="title">Launcher Pro System</div>
+    <div id="status">Estamos preparando seu link, aguarde... (Estágio 1/3)</div>
+
+    <div id="progress-container">
+        <div id="progress-bar"></div>
+        <div id="percentage">0%</div> 
+    </div>
+
+    <div id="countdown">5</div>
+    <button id="next-button" onclick="startCountdown()">Próximo</button>
+
+    <script>
+        let step = 0;
+
+        // Função para atualizar o título
+        function updateStatus() {
+            const statusText = document.getElementById("status");
+            statusText.innerText = `Estamos preparando seu link, aguarde... (Estágio ${step + 1}/3)`;
+        }
+
+        // Função para carregar a barra de progresso
+        function loadProgress() {
+            const progressBar = document.getElementById("progress-bar");
+            const percentageDisplay = document.getElementById("percentage");
+            let progress = 0;
+
+            const randomSpeed = Math.random() > 0.5 ? "fast" : "slow";
+            progressBar.className = randomSpeed;
+
+            const loading = setInterval(() => {
+                progress += Math.floor(Math.random() * 2) + 1;
+                progressBar.style.width = progress + "%";
+                percentageDisplay.innerText = progress + "%"; 
+
+                if (progress >= 100) {
+                    clearInterval(loading);
+                    document.getElementById("next-button").style.display = "block";
+                }
+            }, Math.random() * 250 + 250);
+        }
+
+        // Função de contagem regressiva
+        function startCountdown() {
+            document.getElementById("next-button").style.display = "none";
+            let countdownValue = 5;
+            const countdownDisplay = document.getElementById("countdown");
+            countdownDisplay.style.display = "block";
+            countdownDisplay.innerText = countdownValue;
+
+            const countdownInterval = setInterval(() => {
+                countdownValue--;
+                countdownDisplay.innerText = countdownValue;
+
+                if (countdownValue <= 0) {
+                    clearInterval(countdownInterval);
+                    countdownDisplay.style.display = "none";
+                    nextStep();
+                }
+            }, 1000);
+        }
+
+        // Função para ir para o próximo estágio
+        function nextStep() {
+            step++;
+            document.getElementById("progress-bar").style.width = "0";
+
+            if (step < 3) {
+                updateStatus();
+                loadProgress();
+            } else {
+                window.location.href = "https://destino-final.com"; 
+            }
+        }
+
+        // Variáveis para controlar o movimento do fundo
+        let lastTouchX = 0;
+        let lastTouchY = 0;
+        let moveX = 0;
+        let moveY = 0;
+
+        // Função para movimentar o fundo ao tocar
+        document.body.addEventListener('touchstart', (event) => {
+            lastTouchX = event.touches[0].clientX;
+            lastTouchY = event.touches[0].clientY;
+        });
+
+        document.body.addEventListener('touchmove', (event) => {
+            const x = event.touches[0].clientX;
+            const y = event.touches[0].clientY;
+
+            // Ajuste para maior liberdade de movimento
+            moveX = (x - lastTouchX) * 0.4;  // Aumento da suavidade e amplitude
+            moveY = (y - lastTouchY) * 0.4;  // Aumento da suavidade e amplitude
+
+            const parallax = document.querySelector('.parallax');
+
+            // Aplica o deslocamento no fundo, com movimento fluído
+            parallax.style.backgroundPosition = `${50 + moveX}% ${50 + moveY}%`;
+
+            // Atualiza as últimas posições
+            lastTouchX = x;
+            lastTouchY = y;
+        });
+
+        // Quando o toque é liberado, o fundo volta suavemente
+        document.body.addEventListener('touchend', () => {
+            const parallax = document.querySelector('.parallax');
+            parallax.style.transition = 'background-position 0.6s ease-out'; 
+            parallax.style.backgroundPosition = 'center center'; 
+        });
+
+        // Inicia o primeiro carregamento
+        updateStatus();
+        loadProgress();
+    </script>
+</body>
+</html>
